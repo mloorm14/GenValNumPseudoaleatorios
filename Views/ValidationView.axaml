@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GenValNumAl.ViewModels"
+             x:Class="GenValNumAl.Views.ValidationView"
+             x:DataType="vm:ValidationViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- ── Encabezado + formulario ─────────────────────────────────────── -->
+    <ScrollViewer Grid.Row="0"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  MaxHeight="400">
+      <StackPanel Margin="32,28,32,16" Spacing="0">
+
+        <TextBlock Classes="section-title" Text="Validación Estadística" />
+        <TextBlock Classes="formula"
+                   Text="Carga una muestra de números pseudoaleatorios y aplica una prueba de bondad de ajuste." />
+
+        <!-- Carga de archivo -->
+        <TextBlock Classes="input-label" Text="Archivo de datos (.txt)" />
+        <Grid ColumnDefinitions="Auto,16,*">
+          <Button Grid.Column="0"
+                  Classes="secondary"
+                  Content="📂  Cargar archivo .txt"
+                  Command="{Binding CargarArchivoCommand}" />
+          <TextBlock Grid.Column="2"
+                     VerticalAlignment="Center"
+                     Foreground="#AAAACC"
+                     FontSize="13"
+                     TextTrimming="CharacterEllipsis"
+                     Text="{Binding NombreArchivo}" />
+        </Grid>
+
+        <!-- Selección de prueba -->
+        <TextBlock Classes="input-label" Text="Prueba de validación" />
+        <ComboBox ItemsSource="{Binding PruebasDisponibles}"
+                  SelectedItem="{Binding PruebaSeleccionada}"
+                  HorizontalAlignment="Stretch">
+          <ComboBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Nombre}" />
+            </DataTemplate>
+          </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <!-- Parámetros -->
+        <Grid ColumnDefinitions="*,16,*">
+          <StackPanel Grid.Column="0">
+            <TextBlock Classes="input-label" Text="Alpha (Significancia)" />
+            <TextBox Classes="input-field"
+                     Text="{Binding Alpha}"
+                     Watermark="ej: 0.05" />
+          </StackPanel>
+
+          <StackPanel Grid.Column="2" IsVisible="{Binding MostrarIntervalos}">
+            <TextBlock Classes="input-label" Text="Intervalos (k)" />
+            <TextBox Classes="input-field"
+                     Text="{Binding Intervalos}"
+                     Watermark="ej: 10" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Error -->
+        <Border Classes="error-panel" IsVisible="{Binding HasError}">
+          <Grid ColumnDefinitions="22,8,*">
+            <TextBlock Grid.Column="0" Text="⚠" Foreground="#FF6B6B" FontSize="16" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding ErrorMessage}"
+                       Foreground="#FF9999"
+                       TextWrapping="Wrap"
+                       FontSize="13" />
+          </Grid>
+        </Border>
+
+        <!-- Botón Validar -->
+        <Grid ColumnDefinitions="Auto,16,Auto" Margin="0,16,0,0">
+          <Button Grid.Column="0"
+                  Classes="primary"
+                  Content="Validar"
+                  Command="{Binding ValidarCommand}"
+                  IsEnabled="{Binding CanValidar}"
+                  HorizontalAlignment="Left" />
+          <TextBlock Grid.Column="2"
+                      VerticalAlignment="Center"
+                      Foreground="#7C6AF7"
+                      FontSize="12"
+                      Text="Procesando..."
+                      IsVisible="{Binding IsBusy}" />
+        </Grid>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ── Reporte de validación ───────────────────────────────────────── -->
+    <Border Grid.Row="1"
+            Background="#0E0E1E"
+            BorderBrush="#2A2A4A"
+            BorderThickness="0,1,0,0">
+      <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto">
+        <TextBox Text="{Binding ReporteTexto}"
+                 IsReadOnly="True"
+                 AcceptsReturn="True"
+                 TextWrapping="NoWrap"
+                 FontFamily="Consolas,Courier New,monospace"
+                 FontSize="13"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Foreground="#E0E0FF"
+                 Padding="24,16"
+                 Watermark="El reporte aparecerá aquí después de ejecutar la validación." />
+      </ScrollViewer>
+    </Border>
+
+    <!-- ── Barra de exportación ────────────────────────────────────────── -->
+    <Border Grid.Row="2"
+            Background="#1A1A2E"
+            BorderBrush="#2A2A4A"
+            BorderThickness="0,1,0,0"
+            Padding="32,10">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left"
+                   VerticalAlignment="Center"
+                   Foreground="#5A5A8A"
+                   FontSize="12"
+                   Text="{Binding CantidadDatos, StringFormat='Total: {0} valores cargados'}" />
+        <Button DockPanel.Dock="Right"
+                Classes="secondary"
+                Content="⬇  Exportar reporte a .txt"
+                Command="{Binding ExportarCommand}"
+                IsEnabled="{Binding CanExportar}" />
+      </DockPanel>
+    </Border>
+
+  </Grid>
+</UserControl>

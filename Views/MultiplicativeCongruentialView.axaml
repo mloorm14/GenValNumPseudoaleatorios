@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:GenValNumAl.ViewModels"
+             x:Class="GenValNumAl.Views.MultiplicativeCongruentialView"
+             x:DataType="vm:MultiplicativeCongruentialViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- ── Encabezado + formulario ─────────────────────────────────────── -->
+    <ScrollViewer Grid.Row="0"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  MaxHeight="340">
+      <StackPanel Margin="32,28,32,16" Spacing="0">
+
+        <TextBlock Classes="section-title" Text="Congruencial Multiplicativo" />
+        <TextBlock Classes="formula"
+                   Text="Xₙ₊₁ = (a · Xₙ) mod m    Uₙ = Xₙ / m" />
+        <TextBlock FontSize="11"
+                   Foreground="#5A5A9A"
+                   Margin="0,-8,0,16"
+                   TextWrapping="Wrap"
+                   Text="Restricciones: X₀ ≠ 0 · mcd(X₀, m) = 1" />
+
+        <!-- Campos -->
+        <Grid ColumnDefinitions="*,16,*,16,*,16,*">
+          <StackPanel Grid.Column="0">
+            <TextBlock Classes="input-label" Text="Semilla X₀ (≠ 0)" />
+            <TextBox Classes="input-field" Text="{Binding X0}" Watermark="ej: 7" />
+          </StackPanel>
+          <StackPanel Grid.Column="2">
+            <TextBlock Classes="input-label" Text="Multiplicador (a)" />
+            <TextBox Classes="input-field" Text="{Binding A}" Watermark="ej: 5" />
+          </StackPanel>
+          <StackPanel Grid.Column="4">
+            <TextBlock Classes="input-label" Text="Módulo (m)" />
+            <TextBox Classes="input-field" Text="{Binding M}" Watermark="ej: 16" />
+          </StackPanel>
+          <StackPanel Grid.Column="6">
+            <TextBlock Classes="input-label" Text="Cantidad (n &lt; m)" />
+            <TextBox Classes="input-field" Text="{Binding N}" Watermark="ej: 10" />
+          </StackPanel>
+        </Grid>
+
+        <!-- Error -->
+        <Border Classes="error-panel" IsVisible="{Binding HasError}">
+          <Grid ColumnDefinitions="22,8,*">
+            <TextBlock Grid.Column="0" Text="⚠" Foreground="#FF6B6B" FontSize="16" VerticalAlignment="Top" />
+            <TextBlock Grid.Column="2"
+                       Text="{Binding ErrorMessage}"
+                       Foreground="#FF9999"
+                       TextWrapping="Wrap"
+                       FontSize="13" />
+          </Grid>
+        </Border>
+
+        <Button Classes="primary"
+                Content="Generar secuencia"
+                Command="{Binding GenerateCommand}"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Left" />
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- ── DataGrid ──────────────────────────────────────────────────────── -->
+    <DataGrid Grid.Row="1"
+              ItemsSource="{Binding Results}"
+              IsReadOnly="True"
+              AutoGenerateColumns="False"
+              CanUserReorderColumns="False"
+              CanUserResizeColumns="True"
+              CanUserSortColumns="False"
+              GridLinesVisibility="Horizontal"
+              Background="#0E0E1E"
+              BorderThickness="0,1,0,0"
+              BorderBrush="#2A2A4A"
+              RowBackground="#0E0E1E">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="n (Iteración)"          Binding="{Binding N}"                            Width="120" />
+        <DataGridTextColumn Header="Xₙ (Estado)"            Binding="{Binding Xn}"                           Width="*" />
+        <DataGridTextColumn Header="Uₙ (Número aleatorio)"  Binding="{Binding Un, StringFormat={}{0:F10}}"   Width="2*" />
+      </DataGrid.Columns>
+    </DataGrid>
+
+    <!-- ── Barra de exportación ──────────────────────────────────────────── -->
+    <Border Grid.Row="2"
+            Background="#1A1A2E"
+            BorderBrush="#2A2A4A"
+            BorderThickness="0,1,0,0"
+            Padding="32,10">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Left"
+                   VerticalAlignment="Center"
+                   Foreground="#5A5A8A"
+                   FontSize="12"
+                   Text="{Binding Results.Count, StringFormat='Total: {0} valores generados'}" />
+        <Button DockPanel.Dock="Right"
+                Classes="secondary"
+                Content="⬇  Exportar U_n a .txt"
+                Command="{Binding ExportCommand}"
+                IsEnabled="{Binding CanExport}" />
+      </DockPanel>
+    </Border>
+
+  </Grid>
+</UserControl>

@@ -1,0 +1,181 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GenValNumAl.ViewModels"
+        xmlns:views="using:GenValNumAl.Views"
+        x:Class="GenValNumAl.Views.MainWindow"
+        Title="Generador de Números Pseudoaleatorios — Simulación UTEQ"
+        Width="1100" Height="700"
+        MinWidth="900" MinHeight="580"
+        WindowStartupLocation="CenterScreen"
+        Background="#12121E">
+
+  <Window.Resources>
+    <!--
+      Tema de los ítems de navegación, compartido por las dos listas del sidebar
+      (Generadores y Validadores) para no duplicar el ControlTemplate.
+    -->
+    <ControlTheme x:Key="NavItemTheme" TargetType="ListBoxItem">
+      <Setter Property="Padding"         Value="16,12" />
+      <Setter Property="Cursor"          Value="Hand" />
+      <Setter Property="FontSize"        Value="13.5" />
+      <Setter Property="Foreground"      Value="#CCCCCC" />
+      <Setter Property="Background"      Value="Transparent" />
+      <Setter Property="BorderThickness" Value="3,0,0,0" />
+      <Setter Property="BorderBrush"     Value="Transparent" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Name="Root"
+                  Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter Name="PART_ContentPresenter"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              Foreground="{TemplateBinding Foreground}"
+                              FontSize="{TemplateBinding FontSize}" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+      <Style Selector="^ /template/ Border#Root:pointerover">
+        <Setter Property="Background" Value="#2A2A3A" />
+      </Style>
+      <Style Selector="^:selected /template/ Border#Root">
+        <Setter Property="Background"  Value="#1E1E2E" />
+        <Setter Property="BorderBrush" Value="#7C6AF7" />
+      </Style>
+      <Style Selector="^:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="#FFFFFF" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+      </Style>
+    </ControlTheme>
+  </Window.Resources>
+
+  <Grid ColumnDefinitions="210,*">
+
+    <!-- ═══════════════════════════════════ SIDEBAR ═══════════════════════ -->
+    <Border Grid.Column="0"
+            Background="#1A1A2E"
+            BorderBrush="#2A2A4A"
+            BorderThickness="0,0,1,0"
+            MinWidth="200">
+      <DockPanel>
+
+        <!-- Logo / Título de la app -->
+        <StackPanel DockPanel.Dock="Top" Margin="16,24,16,20">
+          <TextBlock Text="⟨ Sim ⟩"
+                     FontSize="26"
+                     FontWeight="Black"
+                     Foreground="#7C6AF7" />
+          <TextBlock Text="Números Pseudoaleatorios"
+                     FontSize="11"
+                     Foreground="#5A5A8A"
+                     TextWrapping="Wrap"
+                     Margin="0,2,0,0" />
+        </StackPanel>
+
+        <!-- Separador -->
+        <Border DockPanel.Dock="Top" Height="1" Background="#2A2A4A" Margin="12,0,12,12" />
+
+        <!-- Encabezado de sección: Generadores -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="GENERADORES"
+                   FontSize="10"
+                   FontWeight="Bold"
+                   Foreground="#4A4A7A"
+                   Margin="16,0,0,6"
+                   LetterSpacing="2" />
+
+        <!--
+          ItemTemplate sin DataType: es una plantilla catch-all que gana sobre
+          cualquier DataTemplate de Application, evitando que se rendericen las
+          vistas completas en el sidebar.
+        -->
+        <ListBox DockPanel.Dock="Top"
+                 ItemsSource="{Binding Generadores}"
+                 SelectedItem="{Binding SelectedMethod, Mode=OneWay}"
+                 SelectionChanged="OnNavSelectionChanged"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Padding="0"
+                 ItemContainerTheme="{StaticResource NavItemTheme}">
+
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Title}"
+                         TextTrimming="CharacterEllipsis"
+                         ToolTip.Tip="{Binding Title}"
+                         LineHeight="18" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Separador -->
+        <Border DockPanel.Dock="Top" Height="1" Background="#2A2A4A" Margin="12,12,12,12" />
+
+        <!-- Encabezado de sección: Validadores -->
+        <TextBlock DockPanel.Dock="Top"
+                   Text="VALIDADORES"
+                   FontSize="10"
+                   FontWeight="Bold"
+                   Foreground="#4A4A7A"
+                   Margin="16,0,0,6"
+                   LetterSpacing="2" />
+
+        <ListBox DockPanel.Dock="Top"
+                 ItemsSource="{Binding Validadores}"
+                 SelectedItem="{Binding SelectedMethod, Mode=OneWay}"
+                 SelectionChanged="OnNavSelectionChanged"
+                 Background="Transparent"
+                 BorderThickness="0"
+                 Padding="0"
+                 ItemContainerTheme="{StaticResource NavItemTheme}">
+
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Title}"
+                         TextTrimming="CharacterEllipsis"
+                         ToolTip.Tip="{Binding Title}"
+                         LineHeight="18" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Pie de página -->
+        <TextBlock DockPanel.Dock="Bottom"
+                   Text="UTEQ · Modelos de Simulación"
+                   FontSize="10"
+                   Foreground="#3A3A5A"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,14" />
+      </DockPanel>
+    </Border>
+
+    <!-- ═══════════════════════════════ CONTENIDO ════════════════════════
+         Los DataTemplates están aquí (ámbito local) para que el ListBox
+         del sidebar nunca los vea.
+    ════════════════════════════════════════════════════════════════════ -->
+    <ContentControl Grid.Column="1"
+                    Content="{Binding SelectedMethod}"
+                    Background="#12121E">
+      <ContentControl.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:MidSquareViewModel}">
+          <views:MidSquareView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MixedCongruentialViewModel}">
+          <views:MixedCongruentialView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MultiplicativeCongruentialViewModel}">
+          <views:MultiplicativeCongruentialView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LaggedFibonacciViewModel}">
+          <views:LaggedFibonacciView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ValidationViewModel}">
+          <views:ValidationView />
+        </DataTemplate>
+      </ContentControl.DataTemplates>
+    </ContentControl>
+
+  </Grid>
+</Window>

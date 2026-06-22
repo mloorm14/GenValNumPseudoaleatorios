@@ -1,0 +1,121 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GenValNumAl.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+
+    <!-- ── Sidebar nav item ── -->
+    <Style Selector="ListBoxItem.nav-item">
+      <Setter Property="Padding"          Value="16,12" />
+      <Setter Property="Cursor"           Value="Hand" />
+      <Setter Property="FontSize"         Value="13.5" />
+      <Setter Property="Foreground"       Value="#CCCCCC" />
+      <Setter Property="Background"       Value="Transparent" />
+      <Setter Property="BorderThickness"  Value="3,0,0,0" />
+      <Setter Property="BorderBrush"      Value="Transparent" />
+      <Setter Property="Template">
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter Content="{TemplateBinding Content}" />
+          </Border>
+        </ControlTemplate>
+      </Setter>
+    </Style>
+    <Style Selector="ListBoxItem.nav-item:pointerover /template/ Border">
+      <Setter Property="Background" Value="#2A2A3A" />
+    </Style>
+    <Style Selector="ListBoxItem.nav-item:selected /template/ Border">
+      <Setter Property="Background"    Value="#1E1E2E" />
+      <Setter Property="BorderBrush"   Value="#7C6AF7" />
+    </Style>
+    <Style Selector="ListBoxItem.nav-item:selected TextBlock">
+      <Setter Property="Foreground" Value="#FFFFFF" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- ── Input label ── -->
+    <Style Selector="TextBlock.input-label">
+      <Setter Property="FontSize"   Value="12" />
+      <Setter Property="Foreground" Value="#AAAACC" />
+      <Setter Property="Margin"     Value="0,8,0,2" />
+    </Style>
+
+    <!-- ── Section title ── -->
+    <Style Selector="TextBlock.section-title">
+      <Setter Property="FontSize"   Value="22" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Foreground" Value="#E0E0FF" />
+      <Setter Property="Margin"     Value="0,0,0,4" />
+    </Style>
+
+    <!-- ── Formula / description ── -->
+    <Style Selector="TextBlock.formula">
+      <Setter Property="FontFamily" Value="Consolas,Courier New,monospace" />
+      <Setter Property="FontSize"   Value="13" />
+      <Setter Property="Foreground" Value="#9090C0" />
+      <Setter Property="Margin"     Value="0,0,0,16" />
+    </Style>
+
+    <!-- ── Primary action button ── -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background"  Value="#7C6AF7" />
+      <Setter Property="Foreground"  Value="White" />
+      <Setter Property="Padding"     Value="24,10" />
+      <Setter Property="FontSize"    Value="14" />
+      <Setter Property="FontWeight"  Value="SemiBold" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Cursor"      Value="Hand" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#6A58E0" />
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="#4A4A6A" />
+    </Style>
+
+    <!-- ── Secondary / export button ── -->
+    <Style Selector="Button.secondary">
+      <Setter Property="Background"   Value="#2A2A3A" />
+      <Setter Property="Foreground"   Value="#AAAACC" />
+      <Setter Property="Padding"      Value="20,8" />
+      <Setter Property="FontSize"     Value="13" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Cursor"       Value="Hand" />
+      <Setter Property="BorderBrush"  Value="#3A3A5A" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="#333350" />
+    </Style>
+    <Style Selector="Button.secondary:disabled /template/ ContentPresenter">
+      <Setter Property="Opacity" Value="0.4" />
+    </Style>
+
+    <!-- ── Error panel ── -->
+    <Style Selector="Border.error-panel">
+      <Setter Property="Background"     Value="#3A1A1A" />
+      <Setter Property="BorderBrush"    Value="#CC3333" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius"   Value="6" />
+      <Setter Property="Padding"        Value="14,10" />
+      <Setter Property="Margin"         Value="0,12,0,0" />
+    </Style>
+
+    <!-- ── Input TextBox ── -->
+    <Style Selector="TextBox.input-field">
+      <Setter Property="Background"      Value="#1C1C2E" />
+      <Setter Property="BorderBrush"     Value="#3A3A5A" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius"    Value="5" />
+      <Setter Property="Padding"         Value="10,7" />
+      <Setter Property="Foreground"      Value="#E0E0FF" />
+      <Setter Property="FontSize"        Value="14" />
+    </Style>
+  </Application.Styles>
+</Application>
