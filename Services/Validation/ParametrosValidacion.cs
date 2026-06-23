@@ -1,6 +1,6 @@
 namespace GenValNumAl.Services.Validation;
 
-public sealed class ValidationParameters
+public sealed class ParametrosValidacion
 {
     public double Alpha { get; init; } = 0.05;
 

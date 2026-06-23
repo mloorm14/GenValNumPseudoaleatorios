@@ -7,15 +7,15 @@ using GenValNumAl.Models;
 namespace GenValNumAl.Services.Validation;
 
 /// <summary>Corridas Arriba y Abajo: analiza la alternancia de subidas/bajadas entre valores consecutivos.</summary>
-public sealed class RunsUpDownTest : IValidationTest
+public sealed class PruebaCorridasArribaAbajo : IPruebaValidacion
 {
     public string Nombre => "Corridas Arriba y Abajo";
 
-    public ValidationTestResult Ejecutar(List<double> datos, ValidationParameters parametros)
+    public ResultadoPruebaValidacion Ejecutar(List<double> datos, ParametrosValidacion parametros)
     {
         int n = datos.Count;
         if (n < 2)
-            throw new ValidationException("Se necesitan al menos 2 datos para la prueba de corridas arriba y abajo.");
+            throw new ExcepcionValidacion("Se necesitan al menos 2 datos para la prueba de corridas arriba y abajo.");
 
         double alpha = parametros.Alpha;
 
@@ -23,13 +23,13 @@ public sealed class RunsUpDownTest : IValidationTest
         for (int i = 1; i < n; i++)
             signos.Add(datos[i] > datos[i - 1] ? 1 : 0);
 
-        int corridas = Statistics.ContarCorridas(signos);
+        int corridas = Estadistica.ContarCorridas(signos);
 
         double mu = (2.0 * n - 1) / 3.0;
         double varianza = (16.0 * n - 29) / 90.0;
         double z0 = Math.Abs(corridas - mu) / Math.Sqrt(varianza);
 
-        double zCritico = Statistics.NormalInverseCdf(1 - alpha / 2.0);
+        double zCritico = Estadistica.InversaNormalEstandar(1 - alpha / 2.0);
         bool aceptaH0 = z0 <= zCritico;
 
         var sb = new StringBuilder();
@@ -59,8 +59,8 @@ public sealed class RunsUpDownTest : IValidationTest
         sb.AppendLine("Decisión:");
         sb.AppendLine($"  ¿Z₀ ≤ Z crítico?   {z0:F6} ≤ {zCritico:F4}   →   {(aceptaH0 ? "CUMPLE" : "NO CUMPLE")}");
         sb.AppendLine();
-        sb.AppendLine($"  >>> {Statistics.Veredicto(aceptaH0)} <<<");
+        sb.AppendLine($"  >>> {Estadistica.Veredicto(aceptaH0)} <<<");
 
-        return new ValidationTestResult { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
+        return new ResultadoPruebaValidacion { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
     }
 }

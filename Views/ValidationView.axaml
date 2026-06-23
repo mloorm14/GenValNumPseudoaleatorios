@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GenValNumAl.ViewModels"
              x:Class="GenValNumAl.Views.ValidationView"
-             x:DataType="vm:ValidationViewModel">
+             x:DataType="vm:ValidacionViewModel">
 
   <Grid RowDefinitions="Auto,*,Auto">
 
@@ -62,11 +62,11 @@
         </Grid>
 
         <!-- Error -->
-        <Border Classes="error-panel" IsVisible="{Binding HasError}">
+        <Border Classes="error-panel" IsVisible="{Binding TieneError}">
           <Grid ColumnDefinitions="22,8,*">
             <TextBlock Grid.Column="0" Text="⚠" Foreground="#FF6B6B" FontSize="16" VerticalAlignment="Top" />
             <TextBlock Grid.Column="2"
-                       Text="{Binding ErrorMessage}"
+                       Text="{Binding MensajeError}"
                        Foreground="#FF9999"
                        TextWrapping="Wrap"
                        FontSize="13" />
@@ -86,7 +86,7 @@
                       Foreground="#7C6AF7"
                       FontSize="12"
                       Text="Procesando..."
-                      IsVisible="{Binding IsBusy}" />
+                      IsVisible="{Binding EstaOcupado}" />
         </Grid>
 
       </StackPanel>

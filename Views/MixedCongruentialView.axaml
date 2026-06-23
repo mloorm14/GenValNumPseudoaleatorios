@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:GenValNumAl.ViewModels"
              x:Class="GenValNumAl.Views.MixedCongruentialView"
-             x:DataType="vm:MixedCongruentialViewModel">
+             x:DataType="vm:CongruencialMixtoViewModel">
 
-  <Grid RowDefinitions="Auto,*,Auto">
+  <Grid RowDefinitions="Auto,*,Auto,Auto">
 
     <!-- ── Encabezado + formulario ─────────────────────────────────────── -->
     <ScrollViewer Grid.Row="0"
@@ -51,11 +51,11 @@
         </Grid>
 
         <!-- Error -->
-        <Border Classes="error-panel" IsVisible="{Binding HasError}">
+        <Border Classes="error-panel" IsVisible="{Binding TieneError}">
           <Grid ColumnDefinitions="22,8,*">
             <TextBlock Grid.Column="0" Text="⚠" Foreground="#FF6B6B" FontSize="16" VerticalAlignment="Top" />
             <TextBlock Grid.Column="2"
-                       Text="{Binding ErrorMessage}"
+                       Text="{Binding MensajeError}"
                        Foreground="#FF9999"
                        TextWrapping="Wrap"
                        FontSize="13" />
@@ -64,7 +64,7 @@
 
         <Button Classes="primary"
                 Content="Generar secuencia"
-                Command="{Binding GenerateCommand}"
+                Command="{Binding GenerarCommand}"
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left" />
 
@@ -73,7 +73,7 @@
 
     <!-- ── DataGrid ──────────────────────────────────────────────────────── -->
     <DataGrid Grid.Row="1"
-              ItemsSource="{Binding Results}"
+              ItemsSource="{Binding Resultados}"
               IsReadOnly="True"
               AutoGenerateColumns="False"
               CanUserReorderColumns="False"
@@ -91,8 +91,23 @@
       </DataGrid.Columns>
     </DataGrid>
 
-    <!-- ── Barra de exportación ──────────────────────────────────────────── -->
+    <!-- ── Aviso de ciclo / degeneración ─────────────────────────────────── -->
     <Border Grid.Row="2"
+            Classes="cycle-panel"
+            IsVisible="{Binding TieneCiclo}"
+            Margin="32,10,32,0">
+      <Grid ColumnDefinitions="22,8,*">
+        <TextBlock Grid.Column="0" Text="🔄" FontSize="14" VerticalAlignment="Top" />
+        <TextBlock Grid.Column="2"
+                   Text="{Binding MensajeCiclo}"
+                   Foreground="#AFD8FF"
+                   TextWrapping="Wrap"
+                   FontSize="13" />
+      </Grid>
+    </Border>
+
+    <!-- ── Barra de exportación ──────────────────────────────────────────── -->
+    <Border Grid.Row="3"
             Background="#1A1A2E"
             BorderBrush="#2A2A4A"
             BorderThickness="0,1,0,0"
@@ -102,12 +117,12 @@
                    VerticalAlignment="Center"
                    Foreground="#5A5A8A"
                    FontSize="12"
-                   Text="{Binding Results.Count, StringFormat='Total: {0} valores generados'}" />
+                   Text="{Binding Resultados.Count, StringFormat='Total: {0} valores generados'}" />
         <Button DockPanel.Dock="Right"
                 Classes="secondary"
                 Content="⬇  Exportar U_n a .txt"
-                Command="{Binding ExportCommand}"
-                IsEnabled="{Binding CanExport}" />
+                Command="{Binding ExportarCommand}"
+                IsEnabled="{Binding PuedeExportar}" />
       </DockPanel>
     </Border>
 

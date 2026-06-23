@@ -16,42 +16,42 @@ public partial class MainWindow : Window
     {
         base.OnOpened(e);
 
-        if (DataContext is MainWindowViewModel vm)
-            vm.SetFileDialogService(new AvaloniaFileDialogService(this));
+        if (DataContext is VentanaPrincipalViewModel vm)
+            vm.EstablecerServicioDialogoArchivo(new ServicioDialogoArchivoAvalonia(this));
     }
 
     /// <summary>
     /// Las dos listas del sidebar (Generadores / Validadores) muestran su selección con
-    /// binding OneWay a "SelectedMethod" para evitar que la lista inactiva, al no encontrar
-    /// el ítem recién elegido en su propia colección, reescriba "SelectedMethod" a null
+    /// binding OneWay a "MetodoSeleccionado" para evitar que la lista inactiva, al no encontrar
+    /// el ítem recién elegido en su propia colección, reescriba "MetodoSeleccionado" a null
     /// (el clásico bug de dos ListBox compartiendo un único SelectedItem en TwoWay).
     /// Por eso la selección del usuario se reenvía aquí explícitamente al ViewModel.
     /// </summary>
     private void OnNavSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        if (DataContext is MainWindowViewModel vm &&
+        if (DataContext is VentanaPrincipalViewModel vm &&
             e.AddedItems.Count > 0 &&
-            e.AddedItems[0] is ViewModelBase selected)
+            e.AddedItems[0] is ViewModelBase seleccionado)
         {
-            vm.SelectedMethod = selected;
+            vm.MetodoSeleccionado = seleccionado;
         }
     }
 
     // ── Implementación del servicio de diálogo, ligada a esta ventana ────────
 
-    private sealed class AvaloniaFileDialogService : IFileDialogService
+    private sealed class ServicioDialogoArchivoAvalonia : IServicioDialogoArchivo
     {
-        private readonly TopLevel _owner;
+        private readonly TopLevel _propietario;
 
-        public AvaloniaFileDialogService(TopLevel owner) => _owner = owner;
+        public ServicioDialogoArchivoAvalonia(TopLevel propietario) => _propietario = propietario;
 
-        public async Task<string?> PickSaveFilePathAsync(string defaultFileName)
+        public async Task<string?> ElegirRutaGuardarArchivoAsync(string nombreArchivoSugerido)
         {
-            var file = await _owner.StorageProvider.SaveFilePickerAsync(
+            var archivo = await _propietario.StorageProvider.SaveFilePickerAsync(
                 new FilePickerSaveOptions
                 {
                     Title              = "Guardar secuencia de números",
-                    SuggestedFileName  = defaultFileName,
+                    SuggestedFileName  = nombreArchivoSugerido,
                     DefaultExtension   = "txt",
                     FileTypeChoices    = new[]
                     {
@@ -63,12 +63,12 @@ public partial class MainWindow : Window
                     }
                 });
 
-            return file?.Path.LocalPath;
+            return archivo?.Path.LocalPath;
         }
 
-        public async Task<string?> PickOpenFilePathAsync()
+        public async Task<string?> ElegirRutaAbrirArchivoAsync()
         {
-            var files = await _owner.StorageProvider.OpenFilePickerAsync(
+            var archivos = await _propietario.StorageProvider.OpenFilePickerAsync(
                 new FilePickerOpenOptions
                 {
                     Title         = "Seleccionar archivo de números",
@@ -83,7 +83,7 @@ public partial class MainWindow : Window
                     }
                 });
 
-            return files.Count > 0 ? files[0].Path.LocalPath : null;
+            return archivos.Count > 0 ? archivos[0].Path.LocalPath : null;
         }
     }
 }

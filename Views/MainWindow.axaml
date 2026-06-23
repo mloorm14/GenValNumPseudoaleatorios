@@ -93,7 +93,7 @@
         -->
         <ListBox DockPanel.Dock="Top"
                  ItemsSource="{Binding Generadores}"
-                 SelectedItem="{Binding SelectedMethod, Mode=OneWay}"
+                 SelectedItem="{Binding MetodoSeleccionado, Mode=OneWay}"
                  SelectionChanged="OnNavSelectionChanged"
                  Background="Transparent"
                  BorderThickness="0"
@@ -102,9 +102,9 @@
 
           <ListBox.ItemTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Title}"
+              <TextBlock Text="{Binding Titulo}"
                          TextTrimming="CharacterEllipsis"
-                         ToolTip.Tip="{Binding Title}"
+                         ToolTip.Tip="{Binding Titulo}"
                          LineHeight="18" />
             </DataTemplate>
           </ListBox.ItemTemplate>
@@ -124,7 +124,7 @@
 
         <ListBox DockPanel.Dock="Top"
                  ItemsSource="{Binding Validadores}"
-                 SelectedItem="{Binding SelectedMethod, Mode=OneWay}"
+                 SelectedItem="{Binding MetodoSeleccionado, Mode=OneWay}"
                  SelectionChanged="OnNavSelectionChanged"
                  Background="Transparent"
                  BorderThickness="0"
@@ -133,9 +133,9 @@
 
           <ListBox.ItemTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Title}"
+              <TextBlock Text="{Binding Titulo}"
                          TextTrimming="CharacterEllipsis"
-                         ToolTip.Tip="{Binding Title}"
+                         ToolTip.Tip="{Binding Titulo}"
                          LineHeight="18" />
             </DataTemplate>
           </ListBox.ItemTemplate>
@@ -156,22 +156,22 @@
          del sidebar nunca los vea.
     ════════════════════════════════════════════════════════════════════ -->
     <ContentControl Grid.Column="1"
-                    Content="{Binding SelectedMethod}"
+                    Content="{Binding MetodoSeleccionado}"
                     Background="#12121E">
       <ContentControl.DataTemplates>
-        <DataTemplate DataType="{x:Type vm:MidSquareViewModel}">
+        <DataTemplate DataType="{x:Type vm:MitadCuadradoViewModel}">
           <views:MidSquareView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:MixedCongruentialViewModel}">
+        <DataTemplate DataType="{x:Type vm:CongruencialMixtoViewModel}">
           <views:MixedCongruentialView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:MultiplicativeCongruentialViewModel}">
+        <DataTemplate DataType="{x:Type vm:CongruencialMultiplicativoViewModel}">
           <views:MultiplicativeCongruentialView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:LaggedFibonacciViewModel}">
+        <DataTemplate DataType="{x:Type vm:FibonacciRetardadoViewModel}">
           <views:LaggedFibonacciView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:ValidationViewModel}">
+        <DataTemplate DataType="{x:Type vm:ValidacionViewModel}">
           <views:ValidationView />
         </DataTemplate>
       </ContentControl.DataTemplates>

@@ -8,18 +8,18 @@ using GenValNumAl.Models;
 namespace GenValNumAl.Services.Validation;
 
 /// <summary>Prueba de Medias: verifica que la media muestral sea estadísticamente igual a 0.5.</summary>
-public sealed class MeanTest : IValidationTest
+public sealed class PruebaMedias : IPruebaValidacion
 {
     public string Nombre => "Prueba de Medias";
 
-    public ValidationTestResult Ejecutar(List<double> datos, ValidationParameters parametros)
+    public ResultadoPruebaValidacion Ejecutar(List<double> datos, ParametrosValidacion parametros)
     {
         int n = datos.Count;
         if (n < 2)
-            throw new ValidationException("Se necesitan al menos 2 datos para la prueba de medias.");
+            throw new ExcepcionValidacion("Se necesitan al menos 2 datos para la prueba de medias.");
 
         double alpha = parametros.Alpha;
-        double z = Statistics.NormalInverseCdf(1 - alpha / 2.0);
+        double z = Estadistica.InversaNormalEstandar(1 - alpha / 2.0);
 
         double media = datos.Average();
         double errorEstandar = Math.Sqrt(1.0 / (12.0 * n));
@@ -54,8 +54,8 @@ public sealed class MeanTest : IValidationTest
         sb.AppendLine("Decisión:");
         sb.AppendLine($"  ¿LI ≤ X̄ ≤ LS?   {li:F6} ≤ {media:F6} ≤ {ls:F6}   →   {(aceptaH0 ? "CUMPLE" : "NO CUMPLE")}");
         sb.AppendLine();
-        sb.AppendLine($"  >>> {Statistics.Veredicto(aceptaH0)} <<<");
+        sb.AppendLine($"  >>> {Estadistica.Veredicto(aceptaH0)} <<<");
 
-        return new ValidationTestResult { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
+        return new ResultadoPruebaValidacion { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
     }
 }

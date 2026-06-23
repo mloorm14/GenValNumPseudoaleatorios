@@ -8,15 +8,15 @@ using GenValNumAl.Models;
 namespace GenValNumAl.Services.Validation;
 
 /// <summary>Prueba Kolmogorov-Smirnov: compara la función de distribución empírica con la uniforme(0,1).</summary>
-public sealed class KolmogorovSmirnovTest : IValidationTest
+public sealed class PruebaKolmogorovSmirnov : IPruebaValidacion
 {
     public string Nombre => "Prueba Kolmogorov-Smirnov";
 
-    public ValidationTestResult Ejecutar(List<double> datos, ValidationParameters parametros)
+    public ResultadoPruebaValidacion Ejecutar(List<double> datos, ParametrosValidacion parametros)
     {
         int n = datos.Count;
         if (n < 1)
-            throw new ValidationException("Se necesita al menos 1 dato para la prueba Kolmogorov-Smirnov.");
+            throw new ExcepcionValidacion("Se necesita al menos 1 dato para la prueba Kolmogorov-Smirnov.");
 
         double alpha = parametros.Alpha;
         var ordenados = datos.OrderBy(x => x).ToList();
@@ -69,8 +69,8 @@ public sealed class KolmogorovSmirnovTest : IValidationTest
         sb.AppendLine("Decisión:");
         sb.AppendLine($"  ¿D ≤ D crítico?   {d:F6} ≤ {critico:F6}   →   {(aceptaH0 ? "CUMPLE" : "NO CUMPLE")}");
         sb.AppendLine();
-        sb.AppendLine($"  >>> {Statistics.Veredicto(aceptaH0)} <<<");
+        sb.AppendLine($"  >>> {Estadistica.Veredicto(aceptaH0)} <<<");
 
-        return new ValidationTestResult { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
+        return new ResultadoPruebaValidacion { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
     }
 }

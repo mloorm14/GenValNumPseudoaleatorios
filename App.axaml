@@ -107,6 +107,15 @@
       <Setter Property="Margin"         Value="0,12,0,0" />
     </Style>
 
+    <!-- ── Cycle / period detection panel ── -->
+    <Style Selector="Border.cycle-panel">
+      <Setter Property="Background"     Value="#1A2A3A" />
+      <Setter Property="BorderBrush"    Value="#3F8FD6" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius"   Value="6" />
+      <Setter Property="Padding"        Value="14,10" />
+    </Style>
+
     <!-- ── Input TextBox ── -->
     <Style Selector="TextBox.input-field">
       <Setter Property="Background"      Value="#1C1C2E" />

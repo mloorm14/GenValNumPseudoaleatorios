@@ -7,15 +7,15 @@ using GenValNumAl.Models;
 namespace GenValNumAl.Services.Validation;
 
 /// <summary>Prueba de Varianza: verifica que la varianza muestral sea estadísticamente igual a 1/12.</summary>
-public sealed class VarianceTest : IValidationTest
+public sealed class PruebaVarianza : IPruebaValidacion
 {
     public string Nombre => "Prueba de Varianza";
 
-    public ValidationTestResult Ejecutar(List<double> datos, ValidationParameters parametros)
+    public ResultadoPruebaValidacion Ejecutar(List<double> datos, ParametrosValidacion parametros)
     {
         int n = datos.Count;
         if (n < 2)
-            throw new ValidationException("Se necesitan al menos 2 datos para la prueba de varianza.");
+            throw new ExcepcionValidacion("Se necesitan al menos 2 datos para la prueba de varianza.");
 
         double alpha = parametros.Alpha;
         double media = datos.Average();
@@ -26,8 +26,8 @@ public sealed class VarianceTest : IValidationTest
         double estadistico = (n - 1) * varianzaMuestral / (1.0 / 12.0);
 
         int gradosLibertad = n - 1;
-        double chiInferior = Statistics.ChiSquareCriticalValue(gradosLibertad, alpha / 2.0);
-        double chiSuperior = Statistics.ChiSquareCriticalValue(gradosLibertad, 1 - alpha / 2.0);
+        double chiInferior = Estadistica.ValorCriticoChiCuadrado(gradosLibertad, alpha / 2.0);
+        double chiSuperior = Estadistica.ValorCriticoChiCuadrado(gradosLibertad, 1 - alpha / 2.0);
 
         bool aceptaH0 = estadistico >= chiInferior && estadistico <= chiSuperior;
 
@@ -59,8 +59,8 @@ public sealed class VarianceTest : IValidationTest
         sb.AppendLine("Decisión:");
         sb.AppendLine($"  ¿χ²(α/2) ≤ χ²₀ ≤ χ²(1-α/2)?   {chiInferior:F6} ≤ {estadistico:F6} ≤ {chiSuperior:F6}   →   {(aceptaH0 ? "CUMPLE" : "NO CUMPLE")}");
         sb.AppendLine();
-        sb.AppendLine($"  >>> {Statistics.Veredicto(aceptaH0)} <<<");
+        sb.AppendLine($"  >>> {Estadistica.Veredicto(aceptaH0)} <<<");
 
-        return new ValidationTestResult { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
+        return new ResultadoPruebaValidacion { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
     }
 }

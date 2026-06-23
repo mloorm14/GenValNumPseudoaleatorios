@@ -8,10 +8,10 @@ namespace GenValNumAl.Services.Validation;
 /// pruebas de validación: inversa de la normal estándar (algoritmo de Acklam) y el valor
 /// crítico Chi-Cuadrado vía la transformación de Wilson-Hilferty.
 /// </summary>
-public static class Statistics
+public static class Estadistica
 {
-    /// <summary>Inversa de la función de distribución normal estándar (cuantil), algoritmo racional de Acklam.</summary>
-    public static double NormalInverseCdf(double p)
+    /// <summary>Calcular la inversa de la función de distribución normal estándar (cuantil) mediante el algoritmo racional de Acklam.</summary>
+    public static double InversaNormalEstandar(double p)
     {
         if (p <= 0.0) return double.NegativeInfinity;
         if (p >= 1.0) return double.PositiveInfinity;
@@ -59,19 +59,19 @@ public static class Statistics
                 ((((d[0] * qHigh + d[1]) * qHigh + d[2]) * qHigh + d[3]) * qHigh + 1);
     }
 
-    /// <summary>Valor crítico de la distribución Chi-Cuadrado para "df" grados de libertad en el percentil "p", vía Wilson-Hilferty.</summary>
-    public static double ChiSquareCriticalValue(int df, double p)
+    /// <summary>Calcular el valor crítico de la distribución Chi-Cuadrado para "df" grados de libertad en el percentil "p", vía Wilson-Hilferty.</summary>
+    public static double ValorCriticoChiCuadrado(int df, double p)
     {
         if (df <= 0)
-            throw new ValidationException("No se puede calcular el valor crítico Chi-Cuadrado: los grados de libertad deben ser mayores a 0 (verifique el tamaño de la muestra y los intervalos).");
+            throw new ExcepcionValidacion("No se puede calcular el valor crítico Chi-Cuadrado: los grados de libertad deben ser mayores a 0 (verifique el tamaño de la muestra y los intervalos).");
 
-        double z = NormalInverseCdf(p);
+        double z = InversaNormalEstandar(p);
         double termino = 1.0 - 2.0 / (9.0 * df) + z * Math.Sqrt(2.0 / (9.0 * df));
         double valor = df * Math.Pow(termino, 3);
         return valor < 0 ? 0 : valor;
     }
 
-    /// <summary>Cuenta el número de corridas (rachas) en una secuencia de símbolos discretos (p. ej. 0/1).</summary>
+    /// <summary>Contar el número de corridas (rachas) en una secuencia de símbolos discretos (p. ej. 0/1).</summary>
     public static int ContarCorridas(IReadOnlyList<int> secuencia)
     {
         if (secuencia.Count == 0) return 0;

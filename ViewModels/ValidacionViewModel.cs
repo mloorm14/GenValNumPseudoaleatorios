@@ -15,24 +15,24 @@ namespace GenValNumAl.ViewModels;
 /// ViewModel del módulo de Validación Estadística: carga una muestra desde .txt,
 /// ejecuta la prueba seleccionada en segundo plano y permite exportar el reporte.
 /// </summary>
-public partial class ValidationViewModel : ViewModelBase
+public partial class ValidacionViewModel : ViewModelBase
 {
-    public string Title => "Validación Estadística";
+    public string Titulo => "Validación Estadística";
 
-    public ObservableCollection<ValidationTestOption> PruebasDisponibles { get; } = new()
+    public ObservableCollection<OpcionPruebaValidacion> PruebasDisponibles { get; } = new()
     {
-        new ValidationTestOption { Nombre = "Prueba de Medias",                     Prueba = new MeanTest() },
-        new ValidationTestOption { Nombre = "Prueba de Varianza",                   Prueba = new VarianceTest() },
-        new ValidationTestOption { Nombre = "Prueba de Uniformidad (Chi-Cuadrado)", Prueba = new ChiSquareUniformityTest(), RequiereIntervalos = true },
-        new ValidationTestOption { Nombre = "Prueba Kolmogorov-Smirnov",            Prueba = new KolmogorovSmirnovTest() },
-        new ValidationTestOption { Nombre = "Corridas Arriba y Abajo",              Prueba = new RunsUpDownTest() },
-        new ValidationTestOption { Nombre = "Corridas Arriba y Abajo de la Media",  Prueba = new RunsUpDownMeanTest() },
-        new ValidationTestOption { Nombre = "Prueba de Poker",                      Prueba = new PokerTest() },
+        new OpcionPruebaValidacion { Nombre = "Prueba de Medias",                     Prueba = new PruebaMedias() },
+        new OpcionPruebaValidacion { Nombre = "Prueba de Varianza",                   Prueba = new PruebaVarianza() },
+        new OpcionPruebaValidacion { Nombre = "Prueba de Uniformidad (Chi-Cuadrado)", Prueba = new PruebaUniformidadChiCuadrado(), RequiereIntervalos = true },
+        new OpcionPruebaValidacion { Nombre = "Prueba Kolmogorov-Smirnov",            Prueba = new PruebaKolmogorovSmirnov() },
+        new OpcionPruebaValidacion { Nombre = "Corridas Arriba y Abajo",              Prueba = new PruebaCorridasArribaAbajo() },
+        new OpcionPruebaValidacion { Nombre = "Corridas Arriba y Abajo de la Media",  Prueba = new PruebaCorridasArribaAbajoMedia() },
+        new OpcionPruebaValidacion { Nombre = "Prueba de Poker",                      Prueba = new PruebaPoker() },
     };
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(MostrarIntervalos))]
-    private ValidationTestOption _pruebaSeleccionada;
+    private OpcionPruebaValidacion _pruebaSeleccionada;
 
     [ObservableProperty]
     private string _alpha = "0.05";
@@ -47,12 +47,12 @@ public partial class ValidationViewModel : ViewModelBase
     private int _cantidadDatos;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasError))]
-    private string _errorMessage = string.Empty;
+    [NotifyPropertyChangedFor(nameof(TieneError))]
+    private string _mensajeError = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanValidar))]
-    private bool _hasData;
+    private bool _tieneDatos;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanExportar))]
@@ -61,83 +61,83 @@ public partial class ValidationViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanValidar))]
     [NotifyPropertyChangedFor(nameof(CanExportar))]
-    private bool _isBusy;
+    private bool _estaOcupado;
 
     private List<double>? _datos;
 
-    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+    public bool TieneError => !string.IsNullOrEmpty(MensajeError);
     public bool MostrarIntervalos => PruebaSeleccionada?.RequiereIntervalos ?? false;
-    public bool CanValidar => HasData && !IsBusy;
-    public bool CanExportar => !string.IsNullOrEmpty(ReporteTexto) && !IsBusy;
+    public bool CanValidar => TieneDatos && !EstaOcupado;
+    public bool CanExportar => !string.IsNullOrEmpty(ReporteTexto) && !EstaOcupado;
 
-    public ValidationViewModel() =>
+    public ValidacionViewModel() =>
         _pruebaSeleccionada = PruebasDisponibles[0];
 
     // ── Servicio de archivo (inyectado desde la vista) ───────────────────────
 
-    private IFileDialogService? _fileDialogService;
+    private IServicioDialogoArchivo? _servicioDialogoArchivo;
 
-    public void SetFileDialogService(IFileDialogService service) =>
-        _fileDialogService = service;
+    public void EstablecerServicioDialogoArchivo(IServicioDialogoArchivo servicio) =>
+        _servicioDialogoArchivo = servicio;
 
     // ── Comandos ─────────────────────────────────────────────────────────────
 
     [RelayCommand]
     private async Task CargarArchivoAsync()
     {
-        if (_fileDialogService is null) return;
+        if (_servicioDialogoArchivo is null) return;
 
-        ErrorMessage = string.Empty;
+        MensajeError = string.Empty;
 
         try
         {
-            string? ruta = await _fileDialogService.PickOpenFilePathAsync();
+            string? ruta = await _servicioDialogoArchivo.ElegirRutaAbrirArchivoAsync();
             if (ruta is null) return;
 
-            IsBusy = true;
-            _datos = await Task.Run(() => NumberFileParser.Parse(File.ReadAllText(ruta)));
+            EstaOcupado = true;
+            _datos = await Task.Run(() => AnalizadorArchivoNumeros.Analizar(File.ReadAllText(ruta)));
             NombreArchivo = Path.GetFileName(ruta);
             CantidadDatos = _datos.Count;
-            HasData = true;
+            TieneDatos = true;
             ReporteTexto = string.Empty;
         }
-        catch (ValidationException ex)
+        catch (ExcepcionValidacion ex)
         {
-            ErrorMessage = ex.Message;
-            HasData = false;
+            MensajeError = ex.Message;
+            TieneDatos = false;
         }
         catch (System.Exception ex)
         {
-            ErrorMessage = $"No se pudo leer el archivo: {ex.Message}";
-            HasData = false;
+            MensajeError = $"No se pudo leer el archivo: {ex.Message}";
+            TieneDatos = false;
         }
         finally
         {
-            IsBusy = false;
+            EstaOcupado = false;
         }
     }
 
     [RelayCommand]
     private async Task ValidarAsync()
     {
-        ErrorMessage = string.Empty;
+        MensajeError = string.Empty;
 
         if (_datos is null || _datos.Count == 0)
         {
-            ErrorMessage = "Primero debe cargar un archivo con números.";
+            MensajeError = "Primero debe cargar un archivo con números.";
             return;
         }
 
         if (PruebaSeleccionada is null)
         {
-            ErrorMessage = "Debe seleccionar una prueba de validación.";
+            MensajeError = "Debe seleccionar una prueba de validación.";
             return;
         }
 
         if (!double.TryParse(Alpha, NumberStyles.Float, CultureInfo.InvariantCulture, out double alpha) ||
             alpha <= 0 || alpha >= 1)
         {
-            ErrorMessage = "El valor de Alpha (α) debe ser un número entre 0 y 1.";
+            MensajeError = "El valor de Alpha (α) debe ser un número entre 0 y 1.";
             return;
         }
 
@@ -145,52 +145,52 @@ public partial class ValidationViewModel : ViewModelBase
         if (PruebaSeleccionada.RequiereIntervalos &&
             (!int.TryParse(Intervalos, NumberStyles.Integer, CultureInfo.InvariantCulture, out intervalos) || intervalos < 2))
         {
-            ErrorMessage = "El número de intervalos (k) debe ser un entero mayor o igual a 2.";
+            MensajeError = "El número de intervalos (k) debe ser un entero mayor o igual a 2.";
             return;
         }
 
-        IsBusy = true;
+        EstaOcupado = true;
         ReporteTexto = string.Empty;
         try
         {
-            var parametros = new ValidationParameters { Alpha = alpha, Intervalos = intervalos };
+            var parametros = new ParametrosValidacion { Alpha = alpha, Intervalos = intervalos };
             var prueba = PruebaSeleccionada.Prueba;
             var datos = _datos;
 
             var resultado = await Task.Run(() => prueba.Ejecutar(datos, parametros));
             ReporteTexto = resultado.Reporte;
         }
-        catch (ValidationException ex)
+        catch (ExcepcionValidacion ex)
         {
-            ErrorMessage = ex.Message;
+            MensajeError = ex.Message;
         }
         catch (System.Exception ex)
         {
-            ErrorMessage = $"Error inesperado: {ex.Message}";
+            MensajeError = $"Error inesperado: {ex.Message}";
         }
         finally
         {
-            IsBusy = false;
+            EstaOcupado = false;
         }
     }
 
     [RelayCommand]
     private async Task ExportarAsync()
     {
-        if (_fileDialogService is null || string.IsNullOrEmpty(ReporteTexto)) return;
+        if (_servicioDialogoArchivo is null || string.IsNullOrEmpty(ReporteTexto)) return;
 
-        ErrorMessage = string.Empty;
+        MensajeError = string.Empty;
 
         try
         {
-            string? ruta = await _fileDialogService.PickSaveFilePathAsync("reporte_validacion.txt");
+            string? ruta = await _servicioDialogoArchivo.ElegirRutaGuardarArchivoAsync("reporte_validacion.txt");
             if (ruta is null) return;
 
             await File.WriteAllTextAsync(ruta, ReporteTexto);
         }
         catch (System.Exception ex)
         {
-            ErrorMessage = $"No se pudo guardar el reporte: {ex.Message}";
+            MensajeError = $"No se pudo guardar el reporte: {ex.Message}";
         }
     }
 }

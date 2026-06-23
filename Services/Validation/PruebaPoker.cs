@@ -8,7 +8,7 @@ using GenValNumAl.Models;
 namespace GenValNumAl.Services.Validation;
 
 /// <summary>Prueba de Poker: clasifica cada número (5 dígitos) según el patrón de repetición de sus dígitos.</summary>
-public sealed class PokerTest : IValidationTest
+public sealed class PruebaPoker : IPruebaValidacion
 {
     public string Nombre => "Prueba de Poker";
 
@@ -22,11 +22,11 @@ public sealed class PokerTest : IValidationTest
         0.3024, 0.5040, 0.1080, 0.0720, 0.0090, 0.0045, 0.0001
     };
 
-    public ValidationTestResult Ejecutar(List<double> datos, ValidationParameters parametros)
+    public ResultadoPruebaValidacion Ejecutar(List<double> datos, ParametrosValidacion parametros)
     {
         int n = datos.Count;
         if (n < 1)
-            throw new ValidationException("Se necesita al menos 1 dato para la prueba de Poker.");
+            throw new ExcepcionValidacion("Se necesita al menos 1 dato para la prueba de Poker.");
 
         double alpha = parametros.Alpha;
         var observados = new int[Categorias.Length];
@@ -59,10 +59,10 @@ public sealed class PokerTest : IValidationTest
         {
             double esperado = n * Probabilidades[i];
 
-            // Defensa adicional: las probabilidades son constantes fijas > 0, así que Eᵢ no debería
-            // llegar a 0 salvo n = 0 (ya descartado arriba). Se deja explícito para evitar NaN/Infinity.
+            // Las probabilidades son constantes fijas > 0, así que Eᵢ no debería llegar a 0
+            // salvo n = 0 (ya descartado arriba); se deja la guarda explícita para evitar NaN/Infinity.
             if (esperado <= 0)
-                throw new ValidationException("No se puede calcular la frecuencia esperada para la prueba de Poker con esta muestra.");
+                throw new ExcepcionValidacion("No se puede calcular la frecuencia esperada para la prueba de Poker con esta muestra.");
 
             double aporte = Math.Pow(observados[i] - esperado, 2) / esperado;
             estadistico += aporte;
@@ -70,7 +70,7 @@ public sealed class PokerTest : IValidationTest
         }
 
         const int gradosLibertad = 6;
-        double critico = Statistics.ChiSquareCriticalValue(gradosLibertad, 1 - alpha);
+        double critico = Estadistica.ValorCriticoChiCuadrado(gradosLibertad, 1 - alpha);
         bool aceptaH0 = estadistico <= critico;
 
         sb.AppendLine();
@@ -81,9 +81,9 @@ public sealed class PokerTest : IValidationTest
         sb.AppendLine("Decisión:");
         sb.AppendLine($"  ¿χ²₀ ≤ χ²(1-α, 6)?   {estadistico:F6} ≤ {critico:F6}   →   {(aceptaH0 ? "CUMPLE" : "NO CUMPLE")}");
         sb.AppendLine();
-        sb.AppendLine($"  >>> {Statistics.Veredicto(aceptaH0)} <<<");
+        sb.AppendLine($"  >>> {Estadistica.Veredicto(aceptaH0)} <<<");
 
-        return new ValidationTestResult { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
+        return new ResultadoPruebaValidacion { Reporte = sb.ToString(), SeAceptaH0 = aceptaH0 };
     }
 
     private static int ClasificarCategoria(double valor)
